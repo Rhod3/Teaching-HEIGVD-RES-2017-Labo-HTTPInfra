@@ -9,6 +9,7 @@
   "author": "Nicolas Rod",
   "license": "ISC",
   "dependencies": {
-    "chance": "^1.0.8"
+    "chance": "^1.0.8",
+    "express": "^4.15.3"
   }
 }
