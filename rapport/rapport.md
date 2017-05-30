@@ -126,3 +126,21 @@ function generateStudents() {
     return students;
 }
 ```
+
+* Reconstruction de l'image avec cette nouvelle app
+```
+docker build -t res/express_students .
+```
+* Une fois l'image construite et lancée avec la commande
+```
+docker run -p 3000:3000 res/express_students
+```
+* On peut accéder à l'app simplement avec:
+```
+localhost:3000
+```
+* Si on a installé Docker For Windows et pas DockerToolBox, sinon faut trouver l'adresse à laquelle faut accéder avec un docker inspect qui va bien.
+
+* Tuto Postman:
+    * Exemple de GET sur l'app
+    * Ajout d'un environnement pour définir facilement à qui on s'adresse
