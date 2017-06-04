@@ -162,7 +162,7 @@ On veut récupérer les adresses IP des containers qu'on lance. On va donc lance
 docker run -d --name apache_static res/apache
 docker run -d --name express_dynamic res/express_students
 ```
-Une les containers lancés, on peut récupérer leur adresse IP avec la commande suivante:
+Une fois les containers lancés, on peut récupérer leur adresse IP avec la commande suivante:
 ```
 docker inspect apache_static | grep -i ipaddress
 docker inspect express_dynamic | grep -i ipaddress
@@ -217,6 +217,54 @@ Il faut ensuite activer les modules *proxy* et *proxy_http*. Une fois ces module
 ```
 service apache2 reload
 ```
-Notre reverse proxy est maintenant manuellement installé. Néamoins, cette configuration sera perdu si le conteneur est arrêté, il convient donc de créer une image docker pour faire ceci automatiquement.
+Notre reverse proxy est maintenant manuellement installé. Néanmoins, cette configuration sera perdue si le conteneur est arrêté, il convient donc de créer une image docker pour faire ceci automatiquement.
 
 ### Step 3c
+
+Nous allons configurer notre Dockerfile comme suit, afin qu'il mette à chaque démarrage du conteneur ce que nous avons fait manuellement à l'étape 3b.
+```
+FROM php:5.6-apache
+
+COPY conf/ /etc/apache2
+
+RUN a2enmod proxy proxy_http
+RUN a2ensite 000-* 001-*
+```
+
+Le dossier */conf* contient les fichiers *000-default.conf* et *001-reverse-proxy.conf*. Voici le contenu de ces fichiers, semblables à quelques différences à l'étape 3b
+```
+<VirtualHost *:80>
+</VirtualHost>
+```
+```
+<VirtualHost *:80>
+    ServerName demo.res.ch
+
+    #ErrorLog ${APACHE_LOG_DIR}/error.log
+    #CustomLog ${APACHE_LOG_DIR}/access_log combined
+
+    ProxyPass "/api/students/" "http://172.17.0.3:3000"
+    ProxyPassReverse "/api/students/" "http://172.17.0.3:3000"
+
+    ProxyPass "/" "http://172.17.0.2:80"
+    ProxyPassReverse "/" "http://172.17.0.2:80"
+</VirtualHost>
+```
+
+On peut ensuite tester le tout en accédant depuis un navigateur à l'adresse *http://192.168.99.100:8080/* (l'adresse IP a été trouvée à l'aide de la commande *docker-machine inspect*). On peut constater une erreur de type *Forbidden* puisqu'on tombe sur la configuration du virtual host 000 qui ne nous laisse pas accéder à du contenu. Il aurait fallu spécifier l'entête *Host:* dans la requête HTTP, ce que nous allons faire ci-dessous.
+
+On peut commencer par écrire cette requête nous-même (après nous être connecté au serveur):
+```
+telnet 192.168.99.100 8080
+
+GET /api/students/ HTTP/1.0
+Host: demo.res.ch
+
+```
+Cette requête correspond au virtualhost 001 et nous renvoie un Json avec des personnes générées aéatoirement, comme prévu. Si on met autre chose comme ressource à get, par exemple "/api/student", on recoit une 404 vu qu'on a êté redirigé par l'autre règle de la conf 001 (donc sur le serveur apache static) et que le serveur apache fournissant du contenu statique n'a pas de ressource "/api/students".
+
+Pour que ca marche directement depuis le navigateur, il ajouter la ligne suivante au fichier *hosts*
+```
+192.168.99.100 demo.res.ch
+```
+On peut tester avec *ping demo.res.ch*. Si on accède depuis un navigateur à *demo.res.ch:8080*, on accède au serveur apache static et sa page bootstrap, tandis que si on accède à *demo.res.ch:8080/api/students/*, le navigateur nous affiche le fichier Json généré par le serveur express-dynamic.
