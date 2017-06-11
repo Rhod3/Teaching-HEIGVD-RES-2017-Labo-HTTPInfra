@@ -305,3 +305,8 @@ $(function() {
 });
 ```
 
+## Step 5
+On peut passer des variables au démarrage d'un container à l'aide de l'option *-e*.
+
+L'image docker php5.6 lance un script apache2-foreground à son lancement. 
+On va le copier et y ajouter de nouvelles fonctionnalités afin de récupérer les variables dynamiques que l'on a passé à notre machine.
