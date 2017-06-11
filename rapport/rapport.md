@@ -268,3 +268,40 @@ Pour que ca marche directement depuis le navigateur, il ajouter la ligne suivant
 192.168.99.100 demo.res.ch
 ```
 On peut tester avec *ping demo.res.ch*. Si on accède depuis un navigateur à *demo.res.ch:8080*, on accède au serveur apache static et sa page bootstrap, tandis que si on accède à *demo.res.ch:8080/api/students/*, le navigateur nous affiche le fichier Json généré par le serveur express-dynamic.
+
+## Step 4
+On commence par installer vim sur toutes les images qu'on a créé jusqu'à maintenant. On fait ca en rajoutant les lignes suivantes à leur Dockerfile respectif:
+```
+RUN apt-get update && \
+  apt-get install -y vim
+```
+Il faut ensuite ne pas oublier de rebuild les images et de les redémarrer dans le bon ordre étant donné que les adresses IP dans le reverse proxy sont codés en dur.
+
+Remarques: il est possible qu'il faille refaire un npm install là où se trouve le fichier package.json des images pour que les images se build correctement (particulièrement si npm-modules manque)
+
+Ensuite, il faut rajouter un script javascript dans le index.html de notre template Bootstrap pour qu'il aille charger du contenu généré aléatoirement sur l'image express_students.
+
+Voici le code à rajouter dans index.html:
+```html
+<!-- Custom script -->
+<script src="js/students.js"></script>
+```
+Et voici un exemple de script (TODO le modifier pour faire un truc original) :
+```javascript
+$(function() {
+    console.log("coucou");
+
+    function loadStudents(){
+        $.getJSON( "/api/students/", function (students) {
+            var msg = "Nobody";
+            if ( students.length > 0 ) {
+                msg = students[0].firstname + " " + students[0].lastname;
+            }
+            $(".skills").text(message);
+        });
+    };
+    loadStudents();
+    setInterval(loadStudents, 5000);
+});
+```
+
