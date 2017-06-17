@@ -304,9 +304,11 @@ $(function() {
     setInterval(loadStudents, 5000);
 });
 ```
+On peut ensuite lancer les 3 containers à la suite (ordre important car adresse IP codée en dur) et se connecter à demo.res.ch:8080 depuis un browser pour constater que ca marche.
 
 ## Step 5
 On peut passer des variables au démarrage d'un container à l'aide de l'option *-e*.
 
 L'image docker php5.6 lance un script apache2-foreground à son lancement. 
 On va le copier et y ajouter de nouvelles fonctionnalités afin de récupérer les variables dynamiques que l'on a passé à notre machine.
+
