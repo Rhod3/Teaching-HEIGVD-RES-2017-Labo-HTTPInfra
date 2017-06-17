@@ -305,3 +305,4 @@ $(function() {
 });
 ```
 
+On peut ensuite lancer les 3 containers à la suite (ordre important car adresse IP codée en dur) et se connecter à demo.res.ch:8080 depuis un browser pour constater que ca marche.
