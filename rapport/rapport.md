@@ -1,11 +1,30 @@
 # Teaching-HEIGVD-RES-2017-Labo-HTTPInfra
 
 ## Step 1
-TODO
+Dans cette première étape, nous avons construit une nouvelle image Docker à partir d’une image php:5.6 (qui contient un serveur httpd)
+
+Nous avons ensuite construit une nouvelle image à partir de cette dernière afin de lui transmettre du contenu http récupéré depuis un fournisseur de site web de type « One Page Bootstrap ».
+
+Une fois cette image construite, il suffit de lancer un container et de s’y connecter « directement » : on récupère l’adresse IP de la docker-machine et on se connecte à cette adresse au port 8888 depuis n’importe quel browser.
+
+### Acceptance criteria
+
+* You have a GitHub repo with everything needed to build the Docker image.
+* You do a demo, where you build the image, run a container and access content from a browser.
+    Cf script de l'étape 1.
+* You have used a nice looking web template, different from the one shown in the webcast.
+    (Différent dans la branche *fb-personal-content*, pour l'instant c'est comme dans le webcast)
+* You are able to explain what you do in the Dockerfile.
+    On se base sur une image pré-existante avec le FROM.
+    On va ensuite copier le dossier *content/* dans le dossier *var/www/html/*. Ce dernier contient l’arborescence des pages html. 
+    Cette manipulation permet donc de coder nos pages http sur notre ordinateur en local pour ensuite les placer dans l'image php:5.6 afin que le serveur httpd puisse s'en servir.
+* You are able to show where the apache config files are located (in a running container).
+    Docker exec -it res/apache /bin/bash
+* You have documented your configuration in your report.
 
 ## Step 2
 ### Step 2a
-TODO
+Introduction à comment faire une application Node.js utilisable depuis un container.
 ### Step 2b
 Introduction à comment faire un serveur HTTP en node avec les classes de bases sur https://nodejs.org/en/docs/guides/anatomy-of-an-http-transaction/ 
 
