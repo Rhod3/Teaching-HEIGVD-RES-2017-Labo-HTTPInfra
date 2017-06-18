@@ -312,3 +312,19 @@ On peut passer des variables au démarrage d'un container à l'aide de l'option 
 L'image docker php5.6 lance un script apache2-foreground à son lancement. 
 On va le copier et y ajouter de nouvelles fonctionnalités afin de récupérer les variables dynamiques que l'on a passé à notre machine.
 
+Ces variables vont ensuite produire à l'aide d'un peu de PHP le nouveau fichier de configuration *001-reverse-proxy.conf* avec les bonnes adresses. Voici le code PHP générant ce fichier de config:
+```php
+<?php
+ $ip_adress_static = getenv('STATIC_APP');
+ $ip_adress_dynamic = getenv('DYNAMIC_APP');
+?>
+<VirtualHost *:80>
+    ServerName demo.res.ch
+
+    ProxyPass '/api/students/' 'http://<?php print "$ip_adress_dynamic"?>/'
+    ProxyPassReverse '/api/students/' 'http://<?php print "$ip_adress_dynamic"?>/'
+
+    ProxyPass '/' 'http://<?php print "$ip_adress_static"?>/'
+    ProxyPassReverse '/' 'http://<?php print "$ip_adress_static"?>/'
+</VirtualHost>
+```
