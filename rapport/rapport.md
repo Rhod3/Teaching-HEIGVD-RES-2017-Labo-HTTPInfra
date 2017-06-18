@@ -1,28 +1,32 @@
 # Teaching-HEIGVD-RES-2017-Labo-HTTPInfra
+Ce rapport contient un résumé des différentes configurations pour chaque étape ainsi que des instructions plus détaillées sur ce qui a été fait selon les différents webcast.
+
+Il est à noter que le résultat de chaque étape est identique au contenu des webcasts. La branche *fb-personal-content* a été créé à partir du contenu de l'étape 5 et contient du contenu personnalisé afin de répondre aux divers critères d'originalité.
 
 ## Step 1
-Dans cette première étape, nous avons construit une nouvelle image Docker à partir d’une image php:5.6 (qui contient un serveur httpd)
+### Configuration finale
+Le contenu de cette étape est disponible sur la branche *fb-apache-static*. Dans le dossier *docker-images/apache-php-images/* se trouve tout le nécessaire pour construire une image docker d'un serveur httpd (créé à partir d'une image docker php:7.0-apache) présentant du contenu HTTP statique (contenu situé dans le dossier *content/*). Le contenu utilisé dans cette branche correspond à celui utilisé dans le webcast. Il a été changé dans la branche *fb-personal-content* pour le template *Greyscale*.
+
+Pour consulter le résultat de cette étape, il suffit de lancer le script *demo_step1.sh* et de se connecter à la bonne adresse IP au port 8080 (vraisemblablement celle de la docker-machine ou simplement localhost suivant l'installation docker utilisée).
+
+### Step 1a
+Dans cette première étape, nous avons construit une nouvelle image Docker à partir d’une image php:7.0 (qui contient un serveur httpd)
 
 Nous avons ensuite construit une nouvelle image à partir de cette dernière afin de lui transmettre du contenu http récupéré depuis un fournisseur de site web de type « One Page Bootstrap ».
 
 Une fois cette image construite, il suffit de lancer un container et de s’y connecter « directement » : on récupère l’adresse IP de la docker-machine et on se connecte à cette adresse au port 8888 depuis n’importe quel browser.
 
-### Acceptance criteria
-
-* You have a GitHub repo with everything needed to build the Docker image.
-* You do a demo, where you build the image, run a container and access content from a browser.
-    Cf script de l'étape 1.
-* You have used a nice looking web template, different from the one shown in the webcast.
-    (Différent dans la branche *fb-personal-content*, pour l'instant c'est comme dans le webcast)
-* You are able to explain what you do in the Dockerfile.
-    On se base sur une image pré-existante avec le FROM.
-    On va ensuite copier le dossier *content/* dans le dossier *var/www/html/*. Ce dernier contient l’arborescence des pages html. 
-    Cette manipulation permet donc de coder nos pages http sur notre ordinateur en local pour ensuite les placer dans l'image php:5.6 afin que le serveur httpd puisse s'en servir.
-* You are able to show where the apache config files are located (in a running container).
-    Docker exec -it res/apache /bin/bash
-* You have documented your configuration in your report.
 
 ## Step 2
+### Configuration finale
+Le contenu de cette étape est disponible sur la branche *fb-express-dynamic*. Dans le dossier *docker-images/express-images/* se trouve tout le nécessaire pour construire une image Docker d'un serveur Node.js renvoyant du contenu généré dynamiquement à chaque connexion.
+
+Dans cette branche, le contenu correspond à celui du webcast: une liste d'étudiants. Il a néanmoins été changé dans la branche *fb-personal-content* pour renvoyer le résultat d'un jet de dé à 100 faces.
+
+Pour consulter le résultat de cette étape, il suffit de lancer le script *demo_step2.sh* et de se connecter à la bonne adresse IP au port 3000 (vraisemblablement celle de la docker-machine ou simplement localhost suivant l'installation docker utilisée).
+
+Si l'image créée ne démarre pas correctement, lancer la commande *npm install* dans le dossier */docker-images/express-images/src/* peut aider.
+
 ### Step 2a
 Introduction à comment faire une application Node.js utilisable depuis un container.
 ### Step 2b
@@ -167,6 +171,17 @@ Tuto Postman:
 
 
 ## Step 3
+### Configuration finale
+Le contenu de cette étape est disponible sur la branche *fb-apache-reverse-proxy*. Dans le dossier *docker-images/apache-reverse-proxy/* se trouve tout le nécessaire pour construire une image Docker d'un serveur serveur reverse-proxy permettant d'accéder:
+* Au contenu statique à l'adresse : *http://demo.res.ch:8080/*
+* Au contenu dynamique à l'adresse : *http://demo.res.ch:8080/api/students/*
+
+Pour pouvoir accéder à ces sites, il faut lancer le script *demo_step3.sh* et ajouter la ligne suivante au fichier hosts:
+```
+*Adresse docker-machine* demo.res.ch
+```
+
+ATTENTION: Les adresses IP sont codées en dur dans les configurations du reverse-proxy, il est donc important de lancer les containers dans le bon ordre (celui du script).
 ### Step 3a
 Normalement, quand on fait une requête HTTP, on charge toute la page et on l'affiche. Si du code Javascript s'exécute, il peut arriver que du JS fasse des requête HTTP asynchrone vers d'autres ressources, comme avec une interface graphique faite en HTML/JS. Ces requêtes asynchrones sont des requêtes Ajax. On a besoin d'un reverse proxy pour faire ces requêtes (en particulier pour "contrer" la same-origin policy).
 
@@ -289,6 +304,14 @@ Pour que ca marche directement depuis le navigateur, il ajouter la ligne suivant
 On peut tester avec *ping demo.res.ch*. Si on accède depuis un navigateur à *demo.res.ch:8080*, on accède au serveur apache static et sa page bootstrap, tandis que si on accède à *demo.res.ch:8080/api/students/*, le navigateur nous affiche le fichier Json généré par le serveur express-dynamic.
 
 ## Step 4
+### Configuration finale
+Le contenu de cette étape est disponible sur la branche *fb-ajax-jquery*. Dans cette branche, on simplement modifier le contenu statique contenu dans */docker-images/apache-php-images/* afin que la page affichée effectue des requêtes AJAX vers le serveur renvoyant du contenu dynamique.
+
+Pour tester cette étape, il suffit de lancer le script *demo_step4.sh*. On peut ensuite se connecter sur *demo.res.ch:8080* pour osberver le résultat.
+
+Comme pour les étapes 1 et 2, une version personnalisé du contenu est disponible sur la branche *fb-personal-content*.
+
+### Step 4a
 On commence par installer vim sur toutes les images qu'on a créé jusqu'à maintenant. On fait ca en rajoutant les lignes suivantes à leur Dockerfile respectif:
 ```
 RUN apt-get update && \
@@ -326,12 +349,23 @@ $(function() {
 On peut ensuite lancer les 3 containers à la suite (ordre important car adresse IP codée en dur) et se connecter à demo.res.ch:8080 depuis un browser pour constater que ca marche.
 
 ## Step 5
+### Configuration finale
+Le contenu de cette étape est disponible sur la branche *fb-dynamic-configuration*. Dans cette branche, on a modifié la création de l'image du serveur reverse-proxy afin que lorsque le serveur se lance, il exécute en plus un fichier php qui va écrire lui-même le fichier de config du serveur. Etant donné que l'on passe en variable d'environnement les adresses IP statique et dynamique de nos containers, le script PHP va les utiliser pour configurer correctement le serveur. On a donc maintenant un moyen de configurer le reverse proxy à son lancement et non plus à la création de l'image.
+
+Pour tester cette étape, il suffit de lancer le script *demo_step5.sh* et de lancer la dernière commande avec les bonnes adresses:
+```
+docker run -e STATIC_APP=172.17.0.x:80 -e DYNAMIC_APP=172.17.0.y:3000 --name apache_rp -p 8080:80 res/apache_rp
+```
+
+Le résultat est disponible sur *demo.res.ch:8080*
+
+### Step 5a
 On peut passer des variables au démarrage d'un container à l'aide de l'option *-e*.
 
 L'image docker php5.6 lance un script apache2-foreground à son lancement. 
 On va le copier et y ajouter de nouvelles fonctionnalités afin de récupérer les variables dynamiques que l'on a passé à notre machine.
 
-Ces variables vont ensuite produire à l'aide d'un peu de PHP le nouveau fichier de configuration *001-reverse-proxy.conf* avec les bonnes adresses. Voici le code PHP générant ce fichier de config:
+Ces variables vont ensuite aider à produire à l'aide d'un peu de PHP le nouveau fichier de configuration *001-reverse-proxy.conf* avec les bonnes adresses. Voici le code PHP générant ce fichier de config:
 ```php
 <?php
  $ip_adress_static = getenv('STATIC_APP');
@@ -347,3 +381,14 @@ Ces variables vont ensuite produire à l'aide d'un peu de PHP le nouveau fichier
     ProxyPassReverse '/' 'http://<?php print "$ip_adress_static"?>/'
 </VirtualHost>
 ```
+
+## Fb-personal-content
+Cette branche a été créé à partir du contenu l'étape 5. Elle contient simplement des modifications vis-à-vis du contenu afin de l'originaliser.
+
+Ainsi, le contenu statique se base désormais sur le template *Greyscale* et sert à afficher le résultat d'un jet d'un dé 100 toutes les 2 secondes.
+
+Pour tester cette étape, il suffit de lancer le script *demo_personalContent.sh* et de lancer la dernière commande avec les bonnes adresses:
+```
+docker run -e STATIC_APP=172.17.0.x:80 -e DYNAMIC_APP=172.17.0.y:3000 --name apache_rp -p 8080:80 res/apache_rp
+```
+Le résultat est disponible sur *demo.res.ch:8080*
