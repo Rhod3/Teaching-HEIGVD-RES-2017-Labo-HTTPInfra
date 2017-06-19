@@ -1,0 +1,58 @@
+# Inspired from: https://hub.docker.com/_/traefik/ & https://raw.githubusercontent.com/containous/traefik/master/traefik.sample.toml
+
+################################################################
+# Global configuration
+################################################################
+
+# Enable debug mode
+#
+# Optional
+# Default: false
+#
+debug = true
+
+################################################################
+# Web configuration backend
+################################################################
+
+# Enable web configuration backend
+#
+# Optional
+#
+[web]
+
+# Web administration port
+#
+# Required
+#
+address = ":8080"
+
+
+################################################################
+# Docker configuration backend
+################################################################
+
+# Enable Docker configuration backend
+#
+# Optional
+#
+[docker]
+
+# Docker server endpoint. Can be a tcp or a unix socket endpoint.
+#
+# Required
+#
+endpoint = "unix:///var/run/docker.sock"
+
+# Default domain used.
+# Can be overridden by setting the "traefik.domain" label on a container.
+#
+# Required
+#
+domain = "demo.res.ch"
+
+# Enable watch docker changes
+#
+# Optional
+#
+watch = true
