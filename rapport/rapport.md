@@ -3,6 +3,8 @@ Ce rapport contient un résumé des différentes configurations pour chaque éta
 
 Il est à noter que le résultat de chaque étape est identique au contenu des webcasts. La branche *fb-personal-content* a été créé à partir du contenu de l'étape 5 et contient du contenu personnalisé afin de répondre aux divers critères d'originalité.
 
+La branche *master* est la plus à jour: elle contient la version finale du rapport ainsi que le contenu du labo après les étapes bonus.
+
 ## Step 1
 ### Configuration finale
 Le contenu de cette étape est disponible sur la branche *fb-apache-static*. Dans le dossier *docker-images/apache-php-images/* se trouve tout le nécessaire pour construire une image docker d'un serveur httpd (créé à partir d'une image docker php:7.0-apache) présentant du contenu HTTP statique (contenu situé dans le dossier *content/*). Le contenu utilisé dans cette branche correspond à celui utilisé dans le webcast. Il a été changé dans la branche *fb-personal-content* pour le template *Greyscale*.
