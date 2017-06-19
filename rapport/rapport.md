@@ -392,3 +392,13 @@ Pour tester cette étape, il suffit de lancer le script *demo_personalContent.sh
 docker run -e STATIC_APP=172.17.0.x:80 -e DYNAMIC_APP=172.17.0.y:3000 --name apache_rp -p 8080:80 res/apache_rp
 ```
 Le résultat est disponible sur *demo.res.ch:8080*
+
+## Additional Steps
+Il était proposé jusqu'à 4 étapes supplémentaires. Nous avons, après recherche et discussion, décidé de tester un autre serveur pour faire le reverse-proxy: traefik.
+
+Traefik
+> Træfik (pronounced like traffic) is a modern HTTP reverse proxy and load balancer made to deploy microservices with ease. It supports several backends (Docker, Swarm, Kubernetes, Marathon, Mesos, Consul, Etcd, Zookeeper, BoltDB, Eureka, Amazon DynamoDB, Rest API, file…) to manage its configuration automatically and dynamically (*from https://traefik.io/ *).
+
+Théoriquement, les 3 premières étapes additionnels sont donc implémentés. De base, Traefik est censé faire du load-balancing à la round-robin (une requête sur un serveur, une autre sur le suivant, etc). Nous avons configuré les serveurs statique pour que le load-balancing se fasse de manière sticky (un utilisateur est lié à un serveur, toutes ses requêtes arriveront sur ce serveur).
+
+Pour tester l'implémentation avec Traefik, il suffit de lancer le script *demo_traefik.sh*. On peut ensuite se connecter sur *demo.res.ch:8080* pour accéder au site, ou sur *demo.res.ch:8888* pour accéder au dashboard de Traefik.
