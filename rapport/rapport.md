@@ -1,5 +1,5 @@
 # Teaching-HEIGVD-RES-2017-Labo-HTTPInfra
-Ce rapport contient un résumé des différentes configurations pour chaque étape ainsi que des instructions plus détaillées sur ce qui a été fait selon les différents webcast.
+Ce rapport contient un résumé des différentes configurations pour chaque étape ainsi que des instructions plus détaillées sur ce qui a été fait selon les différents webcasts.
 
 Il est à noter que le résultat de chaque étape est identique au contenu des webcasts. La branche *fb-personal-content* a été créé à partir du contenu de l'étape 5 et contient du contenu personnalisé afin de répondre aux divers critères d'originalité.
 
@@ -7,7 +7,7 @@ Il est à noter que le résultat de chaque étape est identique au contenu des w
 ### Configuration finale
 Le contenu de cette étape est disponible sur la branche *fb-apache-static*. Dans le dossier *docker-images/apache-php-images/* se trouve tout le nécessaire pour construire une image docker d'un serveur httpd (créé à partir d'une image docker php:7.0-apache) présentant du contenu HTTP statique (contenu situé dans le dossier *content/*). Le contenu utilisé dans cette branche correspond à celui utilisé dans le webcast. Il a été changé dans la branche *fb-personal-content* pour le template *Greyscale*.
 
-Pour consulter le résultat de cette étape, il suffit de lancer le script *demo_step1.sh* et de se connecter à la bonne adresse IP au port 8080 (vraisemblablement celle de la docker-machine ou simplement localhost suivant l'installation docker utilisée).
+Pour consulter le résultat de cette étape, il suffit de lancer le script *demo_step1.sh* et de se connecter à la bonne adresse IP au port 8080 (vraisemblablement celle de la docker-machine ou simplement localhost suivant l'installation de Docker utilisée).
 
 ### Step 1a
 Dans cette première étape, nous avons construit une nouvelle image Docker à partir d’une image php:7.0 (qui contient un serveur httpd)
@@ -21,7 +21,7 @@ Une fois cette image construite, il suffit de lancer un container et de s’y co
 ### Configuration finale
 Le contenu de cette étape est disponible sur la branche *fb-express-dynamic*. Dans le dossier *docker-images/express-images/* se trouve tout le nécessaire pour construire une image Docker d'un serveur Node.js renvoyant du contenu généré dynamiquement à chaque connexion.
 
-Dans cette branche, le contenu correspond à celui du webcast: une liste d'étudiants. Il a néanmoins été changé dans la branche *fb-personal-content* pour renvoyer le résultat d'un jet de dé à 100 faces.
+Dans cette branche, le contenu est identique à celui du webcast (une liste d'étudiants). Il a néanmoins été changé dans la branche *fb-personal-content* pour renvoyer le résultat d'un jet de dé à 100 faces.
 
 Pour consulter le résultat de cette étape, il suffit de lancer le script *demo_step2.sh* et de se connecter à la bonne adresse IP au port 3000 (vraisemblablement celle de la docker-machine ou simplement localhost suivant l'installation docker utilisée).
 
@@ -182,13 +182,14 @@ Pour pouvoir accéder à ces sites, il faut lancer le script *demo_step3.sh* et 
 ```
 
 ATTENTION: Les adresses IP sont codées en dur dans les configurations du reverse-proxy, il est donc important de lancer les containers dans le bon ordre (celui du script).
+
 ### Step 3a
-Normalement, quand on fait une requête HTTP, on charge toute la page et on l'affiche. Si du code Javascript s'exécute, il peut arriver que du JS fasse des requête HTTP asynchrone vers d'autres ressources, comme avec une interface graphique faite en HTML/JS. Ces requêtes asynchrones sont des requêtes Ajax. On a besoin d'un reverse proxy pour faire ces requêtes (en particulier pour "contrer" la same-origin policy).
+Normalement, quand on fait une requête HTTP, on charge toute la page et on l'affiche. Si du code Javascript s'exécute, il peut arriver que du JS fasse des requête HTTP asynchrone vers d'autres ressources, comme avec une interface graphique faite en HTML/JS par exemple. Ces requêtes asynchrones sont des requêtes Ajax. On a besoin d'un reverse proxy pour faire ces requêtes (en particulier pour "contrer" la same-origin policy).
 
 Same-origin policy
 > In computing, the same-origin policy is an important concept in the web application security model. Under the policy, a web browser permits scripts contained in a first web page to access data in a second web page, but only if both web pages have the same origin. An origin is defined as a combination of URI scheme, hostname, and port number. This policy prevents a malicious script on one page from obtaining access to sensitive data on another web page through that page's Document Object Model.
 
-Reverse proxy c'est un point d'entrée unique vers plusieurs ressources, ce qui permet de contourner la same-origin policy.
+Un reverse proxy c'est un point d'entrée unique vers plusieurs ressources, ce qui permet de contourner la same-origin policy.
 
 ### Step 3b
 On veut récupérer les adresses IP des containers qu'on lance. On va donc lancer nos 2 containers en leur donnant un nom
@@ -350,9 +351,9 @@ On peut ensuite lancer les 3 containers à la suite (ordre important car adresse
 
 ## Step 5
 ### Configuration finale
-Le contenu de cette étape est disponible sur la branche *fb-dynamic-configuration*. Dans cette branche, on a modifié la création de l'image du serveur reverse-proxy afin que lorsque le serveur se lance, il exécute en plus un fichier php qui va écrire lui-même le fichier de config du serveur. Etant donné que l'on passe en variable d'environnement les adresses IP statique et dynamique de nos containers, le script PHP va les utiliser pour configurer correctement le serveur. On a donc maintenant un moyen de configurer le reverse proxy à son lancement et non plus à la création de l'image.
+Le contenu de cette étape est disponible sur la branche *fb-dynamic-configuration*. Dans cette branche, on a modifié la création de l'image du serveur reverse-proxy afin que lorsque le serveur se lance, il exécute en plus un fichier php qui va écrire lui-même le fichier de config du serveur. On passe en variable d'environnement les adresses IP statique et dynamique de nos containers, le script PHP va donc les utiliser pour configurer correctement le serveur. On a donc maintenant un moyen de configurer le reverse proxy à son lancement et non plus à la création de l'image.
 
-Pour tester cette étape, il suffit de lancer le script *demo_step5.sh* et de lancer la dernière commande avec les bonnes adresses:
+Pour tester cette étape, il suffit de lancer le script *demo_step5.sh* et de lancer la dernière commande avec les bonnes adresses (qui devraient être affichées dans l'ordre à la fin du script):
 ```
 docker run -e STATIC_APP=172.17.0.x:80 -e DYNAMIC_APP=172.17.0.y:3000 --name apache_rp -p 8080:80 res/apache_rp
 ```
@@ -399,6 +400,15 @@ Il était proposé jusqu'à 4 étapes supplémentaires. Nous avons, après reche
 Traefik
 > Træfik (pronounced like traffic) is a modern HTTP reverse proxy and load balancer made to deploy microservices with ease. It supports several backends (Docker, Swarm, Kubernetes, Marathon, Mesos, Consul, Etcd, Zookeeper, BoltDB, Eureka, Amazon DynamoDB, Rest API, file…) to manage its configuration automatically and dynamically (*from https://traefik.io/ *).
 
-Théoriquement, les 3 premières étapes additionnels sont donc implémentés. De base, Traefik est censé faire du load-balancing à la round-robin (une requête sur un serveur, une autre sur le suivant, etc). Nous avons configuré les serveurs statique pour que le load-balancing se fasse de manière sticky (un utilisateur est lié à un serveur, toutes ses requêtes arriveront sur ce serveur).
+Les 3 premières étapes additionnels (Load-balancing, Round-robin VS sticky session et Dynamic cluster) sont donc implémentés. 
+
+Le load balancing correspond à répartir la charge des requêtes sur plusieurs serveurs sans que cela se voit d'un point de vue utilisateur.
+
+De base, Traefik est censé faire du load-balancing à la round-robin (une requête sur un serveur, une autre sur le suivant, etc). Nous avons configuré les serveurs statiques pour que le load-balancing se fasse de manière sticky (un utilisateur est lié à un serveur, toutes ses requêtes arriveront sur ce serveur). Cette configuration se fait à l'aide du label suivant dans le Dockerfile de l'image apache_static:
+```Dockerfile
+LABEL "traefik.backend.loadbalancer.sticky"="true"
+```
 
 Pour tester l'implémentation avec Traefik, il suffit de lancer le script *demo_traefik.sh*. On peut ensuite se connecter sur *demo.res.ch:8080* pour accéder au site, ou sur *demo.res.ch:8888* pour accéder au dashboard de Traefik.
+
+Pour confirmer que les étapes additionnelles fonctionnent, on peut supprimer ou ajouter manuellement des containers de serveurs statiques et dynamiques et constater que les containers sont mis-à-jour dans Traefik et que le site continue de fonctionner.
